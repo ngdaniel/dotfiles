@@ -1,15 +1,22 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-export PATH="/home/daniel/bin/:home/daniel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/default-java:/home/daniel/scripts"
+export PATH="$HOME/bin/:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/default-java:$HOME/scripts"
 export PANEL_FIFO="/tmp/panel-fifo"
 export PANEL_HEIGHT=24
 export PANEL_FONT="-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*"
 export PANEL_WM_NAME="bspwm_panel"
-export XDG_CONFIG_HOME="~/.config"
+
+export XDG_CONFIG_HOME="$HOME/.config"
+export EDITOR=vim
+export BROWSER=chromium
+export PAGER=less
+
 export _JAVA_AWT_WM_NONREPARTENTING=1
 
 export JAVA_HOME="/usr/lib/jvm/default-java"
+
+export PYTHONSTARTUP=~/.pythonrc
 
 # append to the history file, don't overwrite it
 shopt -s histappend

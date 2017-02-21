@@ -8,10 +8,11 @@
 ;=====================================================
 
 [colors]
-background = #282828
+;background = #282828
+background = #000000
 background-alt = #444
 foreground = #ebdbb2
-foreground-alt = #55
+foreground-alt = #666666
 primary = #ffb52a
 secondary = #e60053
 alert = #bd2c40
@@ -21,9 +22,9 @@ margin-top = 0
 margin-bottom = 0
 
 [bar/example]
-;monitor = ${env:MONITOR:HDMI-1}
+monitor = ${env:MONITOR:eDP-1}
 width = 100%
-height = 20 
+height = 2%
 offset-x = 0
 offset-y = 0
 
@@ -36,25 +37,25 @@ overline-color = #f00
 underline-size = 0
 underline-color = #00f
 
-border-bottom = 0
+border-bottom-size = 0
 border-bottom-color = #333
 
-spacing = 1
+spacing = 0
 padding-left = 0
 padding-right = 0
 module-margin-left = 1
-module-margin-right = 1
+module-margin-right = 2
 
-font-0 = terminus:pixelsize=11;0
+font-0 = "xos4 Terminus:pixelsize=11;0"
 font-1 = unifont:size=6:heavy:fontformat=truetype;-2
-font-2 = siji:pixelsize=10;0
+font-2 = "Wuncon Siji:pixelsize=10;0"
 
 modules-left = bspwm xwindow
-modules-center = mpd
-modules-right = backlight volume xkeyboard memory cpu battery temperature date powermenu
+modules-center =
+modules-right = mpd wlan eth volume battery date
 
-tray-position = right
-tray-padding = 2
+tray-position = center
+tray-padding = 3
 ;tray-transparent = true
 ;tray-background = #0063ff
 
@@ -63,8 +64,8 @@ wm-restack = bspwm
 
 ;override-redirect = true
 
-scroll-up = bspwm-desknext
-scroll-down = bspwm-deskprev
+;scroll-up = bspwm-desknext
+;scroll-down = bspwm-deskprev
 
 ;scroll-up = i3wm-wsnext
 ;scroll-down = i3wm-wsprev
@@ -121,6 +122,19 @@ label-empty = %index%
 label-empty-foreground = ${colors.foreground-alt}
 label-empty-padding = 1
 
+; Only show workspaces defined on the same output as the bar
+; NOTE: The bspwm and XRandR monitor names must match, which they do by default.
+; Default: true
+pin-workspaces = true
+
+; Output mode flags after focused state label
+; Default: false
+inline-mode = false
+
+; Create scroll handlers used to cycle workspaces
+; Default: true
+enable-scroll = false
+
 [module/i3]
 type = internal/i3
 format = <label-state> <label-mode>
@@ -151,9 +165,11 @@ label-visible-padding = ${self.label-focused-padding}
 [module/mpd]
 type = internal/mpd
 
-format-online = <label-song>  <icon-prev> <icon-seekb> <icon-stop> <toggle> <icon-seekf> <icon-next>  <icon-repeat> <icon-random>
+format-online = <label-song>
+format-online-prefix = " "
+format-online-prefix-foreground = ${colors.foreground-alt}
 
-label-song-maxlen = 25
+label-song-maxlen = 100 
 label-song-ellipsis = true
 
 icon-prev = 
@@ -173,19 +189,15 @@ toggle-off-foreground = #66
 [module/backlight]
 type = internal/xbacklight
 
-format = <label> <bar>
-label = BL
+format = <ramp> <label>
+label = %percentage%%
 
-bar-width = 10
-bar-indicator = │
-bar-indicator-foreground = #ff
-bar-indicator-font = 2
-bar-fill = ─
-bar-fill-font = 2
-bar-fill-foreground = #9f78e1
-bar-empty = ─
-bar-empty-font = 2
-bar-empty-foreground = ${colors.foreground-alt}
+ramp-0 = 🌕
+ramp-1 = 🌔
+ramp-2 = 🌓
+ramp-3 = 🌒
+ramp-4 =
+ramp-foreground = ${colors.foreground-alt}
 
 [module/cpu]
 type = internal/cpu
@@ -205,7 +217,7 @@ label = %percentage_used%
 
 [module/wlan]
 type = internal/network
-interface = 
+interface = wlp1s0
 interval = 3.0
 
 format-connected = <ramp-signal> <label-connected>
@@ -213,7 +225,7 @@ format-connected-underline = #9f78e1
 format-disconnected-underline = ${self.format-connected-underline}
 
 label-connected = %essid%
-label-disconnected = %ifname% disconnected
+label-disconnected =
 label-disconnected-foreground = ${colors.foreground-alt}
 
 ramp-signal-0 = 
@@ -225,24 +237,25 @@ ramp-signal-foreground = ${colors.foreground-alt}
 
 [module/eth]
 type = internal/network
-interface = 
+interface = enp2s0
 interval = 3.0
 
 format-connected-underline = #55aa55
 format-connected-prefix = " "
 format-connected-foreground-foreground = ${colors.foreground-alt}
 label-connected = %local_ip%
+format-connected-prefix-foreground = ${colors.foreground-alt}
 
 format-disconnected-underline = ${self.format-connected-underline}
-label-disconnected = %ifname% disconnected
+label-disconnected = 
 label-disconnected-foreground = ${colors.foreground-alt}
 
 [module/date]
 type = internal/date
 interval = 5
 
-date =
-date-alt = " %Y-%m-%d"
+date = 
+date-alt = " %D"
 
 time = %H:%M
 time-alt = %H:%M:%S
@@ -253,34 +266,100 @@ format-underline = #0a6cf5
 
 label = %date% %time%
 
+[module/network]
+type = internal/network
+interface = enp2s0
+
+; Seconds to sleep between updates
+; Default: 1
+interval = 3.0
+
+; Test connectivity every Nth update
+; A value of 0 disables the feature
+; NOTE: Experimental (needs more testing)
+; Default: 0
+;ping-interval = 3
+
+; @deprecated: Define min width using token specifiers (%downspeed:min% and %upspeed:min%)
+; Minimum output width of upload/download rate
+; Default: 3
+udspeed-minwidth = 5
+
+; Accumulate values from all interfaces
+; when querying for up/downspeed rate
+; Default: false
+accumulate-stats = true
+
+; Available tags:
+;   <label-connected> (default)
+;   <ramp-signal>
+format-connected = <ramp-signal> <label-connected>
+
+; Available tags:
+;   <label-disconnected> (default)
+format-disconnected = <label-disconnected>
+
+; Available tags:
+;   <label-connected> (default)
+;   <label-packetloss>
+;   <animation-packetloss>
+format-packetloss = <animation-packetloss> <label-connected>
+
+; Available tokens:
+;   %ifname%    [wireless+wired]
+;   %local_ip%  [wireless+wired]
+;   %essid%     [wireless]
+;   %signal%    [wireless]
+;   %upspeed%   [wireless+wired]
+;   %downspeed% [wireless+wired]
+;   %linkspeed% [wired]
+; Default: %ifname% %local_ip%
+label-connected = %essid% %downspeed:9%
+label-connected-foreground = #eefafafa
+
+; Available tokens:
+;   %ifname%    [wireless+wired]
+; Default: (none)
+label-disconnected = not connected
+label-disconnected-foreground = #66ffffff
+
 [module/volume]
 type = internal/volume
 
-format-volume = <label-volume> <bar-volume>
-label-volume = VOL
-label-volume-foreground = ${root.foreground}
+; Name of the master mixer
+; Default: Master
+master-mixer = Master
 
-format-muted-prefix = " "
-format-muted-foreground = ${colors.foreground-alt}
-label-muted = sound muted
+; Use volume mapping (similar to amixer -M and alsamixer), where the increase in volume is linear to the ear
+; Default: false
+mapping = true
 
-bar-volume-width = 10
-bar-volume-foreground-0 = #55aa55
-bar-volume-foreground-1 = #55aa55
-bar-volume-foreground-2 = #55aa55
-bar-volume-foreground-3 = #55aa55
-bar-volume-foreground-4 = #55aa55
-bar-volume-foreground-5 = #f5a70a
-bar-volume-foreground-6 = #ff5555
-bar-volume-gradient = false
-bar-volume-indicator = │
-bar-volume-indicator-font = 2
-bar-volume-indicator-foreground = #ff
-bar-volume-fill = ─
-bar-volume-fill-font = 2
-bar-volume-empty = ─
-bar-volume-empty-font = 2
-bar-volume-empty-foreground = ${colors.foreground-alt}
+; Available tags:
+;   <label-volume> (default)
+;   <ramp-volume>
+;   <bar-volume>
+format-volume = <ramp-volume> <label-volume>
+
+; Available tags:
+;   <label-muted> (default)
+;   <ramp-volume>
+;   <bar-volume>
+;format-muted = <label-muted>
+
+; Available tokens:
+;   %percentage% (default)
+;label-volume = %percentage%%
+
+; Available tokens:
+;   %percentage% (default)
+label-muted =  muted
+label-muted-foreground = #66
+
+; Only applies if <ramp-volume> is used
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+ramp-volume-foreground = ${colors.foreground-alt}
 
 [module/battery]
 type = internal/battery

@@ -127,6 +127,9 @@ XF86Audio{Raise,Lower}Volume
 XF86AudioMute
     amixer -D pulse set Master 1+ toggle
 
+XF86MonBrightness{Up,Down}
+    xbacklight -{inc,dec} 5
+
 XF86AudioPlay
     mpc toggle
 XF86AudioStop
